@@ -101,6 +101,15 @@ def start(message):
 
 🌐 Web Site Link 👇
 {website_link}
+🎬Watch movies and TV series🎬
+KM Player , VLC player ,Pop player ,Mx player(phone)
+.You can watch with your favorite subtitles.🥰
+movie stream recommend👍
+
+🎬චිත්‍රපට සහ රූපවාහිනී කතා මාලා නරඹන්න.🎬
+KM Player , VLC player , Pop player , Mx player (දුරකථනය)
+ඔබට ඔබේ ප්‍රියතම උපසිරැසි සමඟ නැරඹිය හැකිය.🥰
+movie stream නිර්දේශ කරමි.👍
 """
 
             markup.add(
