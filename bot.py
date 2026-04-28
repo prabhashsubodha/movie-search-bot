@@ -2,7 +2,6 @@ import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 import datetime
-import re
 
 # BOT TOKEN
 BOT_TOKEN = "8642899423:AAEex0efz-uWzDyhUAWv_rwzXWn3Snvi2rM"
@@ -24,35 +23,9 @@ user_requests = {}
 
 
 # --------------------------
-# 🔥 GROUP LINK BLOCKER (NEW)
-# --------------------------
-@bot.message_handler(content_types=['text'])
-def delete_links(message):
-
-    if message.chat.type in ["group", "supergroup"]:
-
-        url_pattern = r"(https?://\S+|www\.\S+|t\.me/\S+)"
-
-        if message.text and re.search(url_pattern, message.text):
-
-            try:
-                bot.delete_message(message.chat.id, message.message_id)
-
-                bot.send_message(
-                    message.chat.id,
-                    "🚫 Links not allowed!",
-                    reply_to_message_id=message.message_id
-                )
-
-            except:
-                pass
-
-            return  # ⛔ IMPORTANT (stop other handlers)
-
-
-# --------------------------
 # CHECK WEBSITE
 # --------------------------
+
 def check_movie_on_site(title, year):
 
     slug = title.lower().replace(" ", "-")
@@ -73,6 +46,7 @@ def check_movie_on_site(title, year):
 # --------------------------
 # START COMMAND
 # --------------------------
+
 @bot.message_handler(commands=['start'])
 def start(message):
 
@@ -113,16 +87,20 @@ def start(message):
 
         markup = InlineKeyboardMarkup()
 
+        # MOVIE EXISTS
         if exists:
 
             text = f"""
-🎬 {title} ({year}) Sinhala Subtitles
+🎬 {title} ({year}) Sinhala Subtitles | සිංහල උපසිරැසි සමග
 
 ⭐ IMDB Rating : {rating}
 
-📅 Year : {year}
+🔰 Quality : 720p / 1080p
 
-👇 Watch / Download
+📅 Release : {year}
+
+🌐 Web Site Link 👇
+{website_link}
 """
 
             markup.add(
@@ -132,10 +110,13 @@ def start(message):
                 )
             )
 
+        # MOVIE NOT EXISTS
         else:
 
             text = f"""
-❌ Not available
+ඔයා ඉල්ලන එක දැනට අපේ සයිට් එකේ නැහැ. 😕
+
+Request Button එක click කරලා request කරන්න 👇
 
 🎬 {title} ({year})
 
@@ -150,13 +131,16 @@ def start(message):
             )
 
         if poster:
+
             bot.send_photo(
                 message.chat.id,
                 poster,
                 caption=text,
                 reply_markup=markup
             )
+
         else:
+
             bot.send_message(
                 message.chat.id,
                 text,
@@ -174,6 +158,7 @@ def start(message):
 # --------------------------
 # SEARCH MOVIE
 # --------------------------
+
 @bot.message_handler(func=lambda m: True)
 def search_movie(message):
 
@@ -187,13 +172,19 @@ def search_movie(message):
 
     markup = InlineKeyboardMarkup()
 
+    # MOVIE NOT FOUND
     if not data["results"]:
 
         bot.send_message(
             message.chat.id,
-            "❌ Not found",
+            """
+කනගාටැයි. 😔
+ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
+හරියට නම සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+""",
             reply_to_message_id=message.message_id
         )
+
         return
 
     for item in data["results"][:10]:
@@ -219,8 +210,17 @@ def search_movie(message):
         )
 
     bot.send_message(
+
         message.chat.id,
-        f"🔎 {query}",
+
+        f"""
+🔎ඔබගේ search එක 👉 {query}
+
+ඔයාට ඕන movie එක select කරන්න 👇
+
+--Powered By 👑MOVIE STREAM👑--
+""",
+
         reply_markup=markup,
         reply_to_message_id=message.message_id
     )
@@ -229,6 +229,7 @@ def search_movie(message):
 # --------------------------
 # REQUEST BUTTON
 # --------------------------
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("request"))
 def request_movie(call):
 
@@ -248,8 +249,17 @@ def request_movie(call):
     )
 
     bot.send_message(
+
         call.from_user.id,
-        "Movie not available. Request කරන්න 👇",
+
+        """
+🎬 Movie not available on website
+
+ඔයා හෝයන movie එක site එකේ නැහැ 🥺
+
+Request කරන්න පුළුවන් 👇
+""",
+
         reply_markup=markup
     )
 
@@ -257,6 +267,7 @@ def request_movie(call):
 # --------------------------
 # SEND REQUEST
 # --------------------------
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("sendreq"))
 def send_request(call):
 
@@ -267,23 +278,53 @@ def send_request(call):
     movie_id = parts[3]
 
     user = call.from_user.id
+    name = call.from_user.first_name
+    username = call.from_user.username
+
     now = datetime.datetime.now()
 
     if user in user_requests:
+
         last = user_requests[user]
-        if (now - last).days < 7:
-            bot.answer_callback_query(call.id, "❌ Try again after 7 days")
+
+        diff = (now - last).days
+
+        if diff < 7:
+
+            bot.answer_callback_query(
+                call.id,
+                "❌ You can request again after 7 days"
+            )
+
             return
 
     user_requests[user] = now
 
+    text = f"""
+🎬 MOVIE REQUEST SENT
+
+👤 User : {name}
+
+🔗 Username : @{username}
+
+📥 Title : {title}
+
+📅 Year : {year}
+
+🆔 TMDB ID : {movie_id}
+"""
+
     bot.send_message(
         call.from_user.id,
-        f"✅ Request Sent\n\n{title} ({year})"
+        text
     )
 
-    bot.answer_callback_query(call.id, "Done")
+    bot.answer_callback_query(
+        call.id,
+        "✅ Request Sent"
+    )
 
 
 print("BOT RUNNING...")
+
 bot.infinity_polling()
