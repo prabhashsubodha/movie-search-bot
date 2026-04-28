@@ -16,7 +16,7 @@ API = "https://api.themoviedb.org/3"
 BOT_USERNAME = "MS_TG_01bot"
 
 # WEBSITE
-WEBSITE = "https://www.moviestream.it.com"
+WEBSITE = "https://moviestream.it.com"
 
 # USER REQUEST DATABASE
 user_requests = {}
