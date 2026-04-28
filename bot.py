@@ -118,6 +118,10 @@ def start(message):
 
 Request Button එක click කරලා request කරන්න 👇
 
+The one you requested is not currently on our site. 😕
+
+Click the Request Button to request 👇
+
 🎬 {title} ({year})
 
 ⭐ IMDB Rating : {rating}
@@ -181,6 +185,9 @@ def search_movie(message):
 කනගාටැයි. 😔
 ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
 හරියට නම සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+Sorry. 😔
+I'm having trouble finding what you're looking for.
+Please enter the correct name and year and try again. 😇
 """,
             reply_to_message_id=message.message_id
         )
@@ -217,6 +224,10 @@ def search_movie(message):
 🔎ඔබගේ search එක 👉 {query}
 
 ඔයාට ඕන movie එක select කරන්න 👇
+
+🔎Your search is 👉 {query}
+
+Select the movie you want 👇
 
 --Powered By 👑MOVIE STREAM👑--
 """,
@@ -258,6 +269,10 @@ def request_movie(call):
 ඔයා හෝයන movie එක site එකේ නැහැ 🥺
 
 Request කරන්න පුළුවන් 👇
+
+The movie you are looking for is not on the site 🥺
+
+You can request it 👇
 """,
 
         reply_markup=markup
