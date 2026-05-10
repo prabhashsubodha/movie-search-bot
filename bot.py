@@ -32,10 +32,10 @@ WEBSITE = "https://moviestream.it.com"
 # ==========================================
 
 # video eka thiyana group/channel id
-SOURCE_CHAT_ID = @moviestream_PS
+SOURCE_CHAT_ID = @Moviestream_SP
 
 # video message id
-VIDEO_MESSAGE_ID = 44
+VIDEO_MESSAGE_ID = 992
 
 # ==========================================
 # USER REQUEST DATABASE
