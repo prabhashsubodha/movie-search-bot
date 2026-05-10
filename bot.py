@@ -3,39 +3,61 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 import requests
 import datetime
 
+# ==========================================
 # BOT TOKEN
+# ==========================================
 BOT_TOKEN = "8642899423:AAEex0efz-uWzDyhUAWv_rwzXWn3Snvi2rM"
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
+# ==========================================
 # TMDB API
+# ==========================================
 API_KEY = "9749e1cc34cc81122cae6b163608aa03"
+
 API = "https://api.themoviedb.org/3"
 
+# ==========================================
 # BOT USERNAME
+# ==========================================
 BOT_USERNAME = "MS_TG_01bot"
 
+# ==========================================
 # WEBSITE
+# ==========================================
 WEBSITE = "https://moviestream.it.com"
 
+# ==========================================
+# AUTO FORWARD VIDEO SETTINGS
+# ==========================================
+
+# video eka thiyana group/channel id
+SOURCE_CHAT_ID = -1001234567890
+
+# video message id
+VIDEO_MESSAGE_ID = 5
+
+# ==========================================
 # USER REQUEST DATABASE
+# ==========================================
 user_requests = {}
 
-
-# --------------------------
+# ==========================================
 # CHECK WEBSITE
-# --------------------------
-
+# ==========================================
 def check_movie_on_site(title, year):
 
     slug = title.lower().replace(" ", "-")
+
     url = f"{WEBSITE}/{slug}-{year}"
 
     try:
+
         r = requests.get(url, timeout=5)
 
         if r.status_code == 200:
             return True, url
+
         else:
             return False, url
 
@@ -43,10 +65,61 @@ def check_movie_on_site(title, year):
         return False, url
 
 
-# --------------------------
-# START COMMAND
-# --------------------------
+# ==========================================
+# GET CHAT ID
+# ==========================================
+@bot.message_handler(commands=['chatid'])
+def get_chat_id(message):
 
+    bot.reply_to(
+        message,
+        f"CHAT ID:\n{message.chat.id}"
+    )
+
+
+# ==========================================
+# GET VIDEO MESSAGE ID
+# ==========================================
+@bot.message_handler(content_types=['video'])
+def get_video_id(message):
+
+    bot.reply_to(
+        message,
+        f"VIDEO MESSAGE ID:\n{message.message_id}"
+    )
+
+
+# ==========================================
+# WELCOME NEW USERS
+# ==========================================
+@bot.message_handler(content_types=['new_chat_members'])
+def welcome(message):
+
+    for member in message.new_chat_members:
+
+        user_name = member.first_name
+
+        text = f"""
+🎬 Welcome to Our MOVIE STREAM Channel! 🍿
+
+Hey there 👋 ({user_name})
+Thanks for joining!
+"""
+
+        # welcome message
+        bot.reply_to(message, text)
+
+        # auto forward video
+        bot.forward_message(
+            message.chat.id,
+            SOURCE_CHAT_ID,
+            VIDEO_MESSAGE_ID
+        )
+
+
+# ==========================================
+# START COMMAND
+# ==========================================
 @bot.message_handler(commands=['start'])
 def start(message):
 
@@ -57,11 +130,15 @@ def start(message):
         data = args[1].split("_")
 
         media = data[0]
+
         movie_id = data[1]
 
         if media == "movie":
+
             url = f"{API}/movie/{movie_id}?api_key={API_KEY}"
+
         else:
+
             url = f"{API}/tv/{movie_id}?api_key={API_KEY}"
 
         data = requests.get(url).json()
@@ -81,17 +158,20 @@ def start(message):
         poster = None
 
         if data.get("poster_path"):
+
             poster = "https://image.tmdb.org/t/p/w500" + data["poster_path"]
 
         exists, website_link = check_movie_on_site(title, year)
 
         markup = InlineKeyboardMarkup()
 
+        # ==========================================
         # MOVIE EXISTS
+        # ==========================================
         if exists:
 
             text = f"""
-🎬 {title} ({year}) Sinhala Subtitles | සිංහල උපසිරැසි සමග
+🎬 {title} ({year}) Sinhala Subtitles
 
 ⭐ IMDB Rating : {rating}
 
@@ -99,21 +179,10 @@ def start(message):
 
 📅 Release : {year}
 
-🎬Watch movies and TV series🎬
-🎥KM Player , VLC player ,Pop player ,Mx player(phone)🎥
-  You can watch with your favorite subtitles.🥰
-  movie stream recommend👍
-
-🎬චිත්‍රපට සහ රූපවාහිනී කතා මාලා නරඹන්න.🎬
-🎥KM Player , VLC player , Pop player , Mx player (දුරකථනය)🎥
-  ඔබට ඔබේ ප්‍රියතම උපසිරැසි සමඟ නැරඹිය හැකිය.🥰
-  movie stream නිර්දේශ කරමි.👍
+🎬 Watch movies and TV series 🎬
 
 🌐 Web Site Link 👇
 {website_link}
-
-
-
 """
 
             markup.add(
@@ -123,17 +192,15 @@ def start(message):
                 )
             )
 
+        # ==========================================
         # MOVIE NOT EXISTS
+        # ==========================================
         else:
 
             text = f"""
-ඔයා ඉල්ලන එක දැනට අපේ සයිට් එකේ නැහැ. 😕
+ඔයා ඉල්ලන movie එක site එකේ නැහැ 😕
 
-Request Button එක click කරලා request කරන්න 👇
-
-The one you requested is not currently on our site. 😕
-
-Click the Request Button to request 👇
+Request Button එක click කරන්න 👇
 
 🎬 {title} ({year})
 
@@ -168,14 +235,17 @@ Click the Request Button to request 👇
 
         bot.send_message(
             message.chat.id,
-            "🎬 MOVIE STREAM BOT\n\nSend movie name to search 🔎"
+            """
+🎬 MOVIE STREAM BOT
+
+Send Movie Name To Search 🔎
+"""
         )
 
 
-# --------------------------
-# SEARCH MOVIE
-# --------------------------
-
+# ==========================================
+# SEARCH MOVIES
+# ==========================================
 @bot.message_handler(func=lambda m: True)
 def search_movie(message):
 
@@ -189,24 +259,30 @@ def search_movie(message):
 
     markup = InlineKeyboardMarkup()
 
-    # MOVIE NOT FOUND
+    # ==========================================
+    # NOT FOUND
+    # ==========================================
     if not data["results"]:
 
         bot.send_message(
             message.chat.id,
+
             """
-කනගාටැයි. 😔
-ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
-හරියට නම සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
-Sorry. 😔
-I'm having trouble finding what you're looking for.
-Please enter the correct name and year and try again. 😇
+කනගාටුයි 😔
+
+Movie එක හොයාගන්න බැරි වුණා.
+
+Please try again with correct name 😇
 """,
+
             reply_to_message_id=message.message_id
         )
 
         return
 
+    # ==========================================
+    # SEARCH RESULTS
+    # ==========================================
     for item in data["results"][:10]:
 
         title = item.get("title") or item.get("name")
@@ -220,11 +296,13 @@ Please enter the correct name and year and try again. 😇
             year = item["first_air_date"][:4]
 
         movie_id = item["id"]
+
         media = item["media_type"]
 
         markup.add(
             InlineKeyboardButton(
                 f"{title} ({year})",
+
                 url=f"https://t.me/{BOT_USERNAME}?start={media}_{movie_id}"
             )
         )
@@ -234,33 +312,31 @@ Please enter the correct name and year and try again. 😇
         message.chat.id,
 
         f"""
-🔎ඔබගේ search එක 👉 {query}
+🔎 Your Search 👉 {query}
 
-ඔයාට ඕන movie එක select කරන්න 👇
+Select Movie 👇
 
-🔎Your search is 👉 {query}
-
-Select the movie you want 👇
-
---Powered By 👑MOVIE STREAM👑--
+-- Powered By MOVIE STREAM --
 """,
 
         reply_markup=markup,
+
         reply_to_message_id=message.message_id
     )
 
 
-# --------------------------
+# ==========================================
 # REQUEST BUTTON
-# --------------------------
-
+# ==========================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("request"))
 def request_movie(call):
 
     parts = call.data.split("|")
 
     title = parts[1]
+
     year = parts[2]
+
     movie_id = parts[3]
 
     markup = InlineKeyboardMarkup()
@@ -279,34 +355,31 @@ def request_movie(call):
         """
 🎬 Movie not available on website
 
-ඔයා හෝයන movie එක site එකේ නැහැ 🥺
-
-Request කරන්න පුළුවන් 👇
-
-The movie you are looking for is not on the site 🥺
-
-You can request it 👇
+Request movie below 👇
 """,
 
         reply_markup=markup
     )
 
 
-# --------------------------
+# ==========================================
 # SEND REQUEST
-# --------------------------
-
+# ==========================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("sendreq"))
 def send_request(call):
 
     parts = call.data.split("|")
 
     title = parts[1]
+
     year = parts[2]
+
     movie_id = parts[3]
 
     user = call.from_user.id
+
     name = call.from_user.first_name
+
     username = call.from_user.username
 
     now = datetime.datetime.now()
@@ -321,7 +394,7 @@ def send_request(call):
 
             bot.answer_callback_query(
                 call.id,
-                "❌ You can request again after 7 days"
+                "❌ Request again after 7 days"
             )
 
             return
@@ -353,6 +426,9 @@ def send_request(call):
     )
 
 
-print("BOT RUNNING...")
+# ==========================================
+# START BOT
+# ==========================================
+print("✅ BOT RUNNING SUCCESSFULLY...")
 
 bot.infinity_polling()
