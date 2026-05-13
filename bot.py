@@ -268,11 +268,12 @@ def search_movie(message):
             message.chat.id,
 
             """
-කනගාටුයි 😔
-
-Movie එක හොයාගන්න බැරි වුණා.
-
-Please try again with correct name 😇
+කනගාටැයි. 😔
+ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
+හරියට නම (අකුරු නිවැරදිව) සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+Sorry. 😔
+I'm having trouble finding what you're looking for.
+Please enter the correct name and year and try again. 😇
 """,
 
             reply_to_message_id=message.message_id
