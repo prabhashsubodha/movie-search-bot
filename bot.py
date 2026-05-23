@@ -92,7 +92,7 @@ Movie/Drama එක site එකට upload කරනවා 🎬
 ❌ Promotions කරන්න එපා
 ❌ Spam කරන්න එපා
 
-ඔයාගේ යාලුවොත් add කරන්න 🫂
+ඔයාගේ යාලුවොත් Group එකට් add කරන්න අමතක කරන්න එපා 🫂
 """
 
         bot.reply_to(message, text)
@@ -148,7 +148,7 @@ def start(message):
         if exists:
 
             text = f"""
-🎬 {title} ({year}) Sinhala Subtitles
+🎬 {title} ({year}) Sinhala Subtitles | English Subtitles
 
 ⭐ IMDB Rating : {rating}
 
