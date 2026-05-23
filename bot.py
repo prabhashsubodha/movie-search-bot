@@ -19,7 +19,8 @@ API = "https://api.themoviedb.org/3"
 # ==========================================
 # SETTINGS
 # ==========================================
-BOT_USERNAME = "@MS_TG_01bot"
+BOT_USERNAME = "MS_TG_01bot"   # ❗ NO @
+
 WEBSITE = "https://moviestream.it.com"
 
 SOURCE_CHAT_ID = -1001234567890
@@ -106,7 +107,7 @@ Movie/Drama එක site එකට upload කරනවා 🎬
             pass
 
 # ==========================================
-# START COMMAND
+# START COMMAND (FIXED LINK BUTTON)
 # ==========================================
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -175,10 +176,12 @@ Request Button එක click කරන්න 👇
 ⭐ IMDB Rating : {rating}
 """
 
+            # ✅ FIXED DEEP LINK BUTTON
+            start_param = f"{media}_{movie_id}"
             markup.add(
                 InlineKeyboardButton(
                     "REQUEST FILM",
-                    callback_data=f"request|{title}|{year}|{movie_id}"
+                    url=f"https://t.me/{BOT_USERNAME}?start={start_param}"
                 )
             )
 
@@ -191,20 +194,17 @@ Request Button එක click කරන්න 👇
         bot.send_message(message.chat.id, "Send movie name to search 🔎")
 
 # ==========================================
-# SEARCH FUNCTION
+# SEARCH FUNCTION (FIXED)
 # ==========================================
-@bot.message_handler(func=lambda m: True)
+@bot.message_handler(func=lambda m: m.text and not m.text.startswith("/"))
 def search_movie(message):
-
-    if not message.text:
-        return
 
     user_id = message.from_user.id
     name = message.from_user.first_name
 
     link_pattern = r"(https?://\S+|t\.me/\S+|www\.\S+)"
 
-    # ================= LINK BLOCK =================
+    # BLOCK LINKS
     if re.search(link_pattern, message.text):
 
         try:
@@ -213,26 +213,9 @@ def search_movie(message):
             pass
 
         if user_id not in warned_users:
-
             warned_users[user_id] = 1
-
-            bot.send_message(
-                message.chat.id,
-                f"""
-🚫━━━━━━━━━━━━🚫
-
-Red line {name}
-
-ඔයාට මේපාරට විතරක් සමාව දෙනවා 😕
-
-ආයෙ Link දැම්මොත් mute කරනවා 😡
-
-🚫━━━━━━━━━━━━🚫
-"""
-            )
-
+            bot.send_message(message.chat.id, f"🚫 Warning {name}")
         else:
-
             try:
                 until_time = datetime.datetime.now() + datetime.timedelta(hours=2)
 
@@ -245,26 +228,13 @@ Red line {name}
                     until_date=until_time
                 )
 
-                bot.send_message(
-                    message.chat.id,
-                    f"""
-⛔━━━━━━━━━━━━⛔
-
-{name} ට පැය 2ක Mute එකක් දීලා තියෙනවා 😡
-
-Reason :
-Repeated Link Sharing 🚫
-
-⛔━━━━━━━━━━━━⛔
-"""
-                )
-
+                bot.send_message(message.chat.id, f"⛔ {name} muted 2 hours")
             except:
                 pass
 
         return
 
-    # ================= SEARCH =================
+    # SEARCH TMDB
     bot.send_chat_action(message.chat.id, "typing")
 
     query = message.text
@@ -273,27 +243,15 @@ Repeated Link Sharing 🚫
     try:
         data = requests.get(url, timeout=10).json()
     except:
-        bot.send_message(message.chat.id, "Error. Try again.")
+        bot.send_message(message.chat.id, "Error")
         return
 
     results = data.get("results", [])
 
-    # ================= NO RESULTS =================
     if not results:
-
-        bot.send_message(
-            message.chat.id,
-            """
-කනගාටැයි. 😔
-ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
-හරියට නම (අකුරු නිවැරදිව) සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
-Sorry. 😔.
-"""
-        )
-
+        bot.send_message(message.chat.id, "No results 😔")
         return
 
-    # ================= RESULTS =================
     markup = InlineKeyboardMarkup()
 
     for item in results[:10]:
@@ -314,21 +272,20 @@ Sorry. 😔.
         elif item.get("first_air_date"):
             year = item["first_air_date"][:4]
 
+        start_param = f"{media}_{movie_id}"
+
+        # ✅ FIXED BUTTON LINK
         markup.add(
             InlineKeyboardButton(
                 f"{title} ({year})",
-                url=f"https://t.me/{BOT_USERNAME}?start={media}_{movie_id}"
+                url=f"https://t.me/{BOT_USERNAME}?start={start_param}"
             )
         )
 
-    bot.send_message(
-        message.chat.id,
-        f"Results for: {query}",
-        reply_markup=markup
-    )
+    bot.send_message(message.chat.id, f"Results for: {query}", reply_markup=markup)
 
 # ==========================================
-# REQUEST SYSTEM
+# REQUEST SYSTEM (UNCHANGED LOGIC)
 # ==========================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("request"))
 def request_movie(call):
@@ -347,15 +304,8 @@ def request_movie(call):
         )
     )
 
-    bot.send_message(
-
-        call.from_user.id,
-
-        """
-🎬 Movie not available on website
-
-Request movie below 👇
-""",
+    bot.send_message(call.from_user.id,
+        "🎬 Request movie below 👇",
         reply_markup=markup
     )
 
@@ -374,10 +324,8 @@ def send_request(call):
 
     now = datetime.datetime.now()
 
-    # ================= 30 MIN LIMIT =================
     if user in user_requests:
         diff = (now - user_requests[user]).total_seconds()
-
         if diff < 1800:
             remaining = int((1800 - diff) / 60)
             bot.answer_callback_query(call.id, f"Wait {remaining} min")
@@ -385,8 +333,7 @@ def send_request(call):
 
     user_requests[user] = now
 
-    bot.send_message(
-        call.from_user.id,
+    bot.send_message(call.from_user.id,
         f"""
 🎬 MOVIE REQUEST SENT
 
@@ -399,19 +346,16 @@ def send_request(call):
 """
     )
 
-    bot.send_message(
-        REQUEST_GROUP,
+    bot.send_message(REQUEST_GROUP,
         f"""
-Hy prabhash,
+Movie Request 🎬
 
-user කෙනෙක් movie / tv series එකක් ඉල්ලනවා 🎬
+User : {name}
+@{username}
 
-👤 User : {name}
-🔗 Username : @{username}
-
-🎥 Movie Name : {title}
-📅 Year : {year}
-🆔 TMDB ID : {movie_id}
+Title : {title}
+Year : {year}
+ID : {movie_id}
 """
     )
 
@@ -421,5 +365,4 @@ user කෙනෙක් movie / tv series එකක් ඉල්ලනවා �
 # RUN BOT
 # ==========================================
 print("BOT RUNNING...")
-
 bot.infinity_polling()
