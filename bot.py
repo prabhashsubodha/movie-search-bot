@@ -479,25 +479,28 @@ def send_request(call):
 
     now = datetime.datetime.now()
 
-    # ==========================================
-    # 7 DAYS LIMIT
-    # ==========================================
-    if user in user_requests:
+# ==========================================
+# 1 HOUR LIMIT
+# ==========================================
+if user in user_requests:
 
-        last = user_requests[user]
+    last = user_requests[user]
 
-        diff = (now - last).days
+    diff = (now - last).total_seconds()
 
-        if diff < 7:
+    # 1 hour = 3600 seconds
+    if diff < 3600:
 
-            bot.answer_callback_query(
-                call.id,
-                "❌ Request again after 7 days"
-            )
+        remaining = int((3600 - diff) / 60)
 
-            return
+        bot.answer_callback_query(
+            call.id,
+            f"❌ Try again after {remaining} minutes"
+        )
 
-    user_requests[user] = now
+        return
+
+user_requests[user] = now
 
     # ==========================================
     # USER MESSAGE
