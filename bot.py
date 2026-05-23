@@ -161,7 +161,7 @@ def start(message):
 """
 
             markup.add(
-                InlineKeyboardButton("WATCH", url=website_link)
+                InlineKeyboardButton("🌐 WATCH / DOWNLOAD", url=website_link)
             )
 
         else:
