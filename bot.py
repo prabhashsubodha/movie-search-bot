@@ -248,7 +248,12 @@ def search_movie(message):
     results = data.get("results", [])
 
     if not results:
-        bot.send_message(message.chat.id, "No results 😔")
+        bot.send_message(message.chat.id, "කනගාටැයි. 😔
+ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
+හරියට නම සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+Sorry. 😔
+I'm having trouble finding what you're looking for.
+Please enter the correct name and year and try again. 😇")
         return
 
     markup = InlineKeyboardMarkup()
