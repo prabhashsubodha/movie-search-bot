@@ -306,9 +306,9 @@ def search_movie(message):
             warning_text = f"""
 🚫━━━━━━━━━━━━🚫
 
-{name}
+Red line {name}
 
-ඔයාට මේපාරට විතරක් warning එකක් 😕
+ඔයාට මේපාරට විතරක් සමාව දෙනවා 😕
 
 ආයෙ Link දැම්මොත් remove කරනවා 😡
 
@@ -320,38 +320,48 @@ def search_movie(message):
                 warning_text
             )
 
-        # ==========================================
-        # SECOND TIME = BAN
-        # ==========================================
-        else:
+# ==========================================
+# SECOND TIME = 2 HOURS MUTE
+# ==========================================
+else:
 
-            try:
+    try:
 
-                bot.ban_chat_member(
-                    message.chat.id,
-                    user_id
-                )
+        # 2 hours from now
+        until_time = datetime.datetime.now() + datetime.timedelta(hours=2)
 
-                remove_text = f"""
+        # Restrict user
+        bot.restrict_chat_member(
+            message.chat.id,
+            user_id,
+            permissions=telebot.types.ChatPermissions(
+                can_send_messages=False
+            ),
+            until_date=until_time
+        )
+
+        mute_text = f"""
 ⛔━━━━━━━━━━━━⛔
 
-{name} Group එකෙන් Remove කරලා දැම්මා 😡
+{name} ට පැය 2ක Mute එකක් දීලා තියෙනවා 😡
 
 Reason :
 Repeated Link Sharing 🚫
 
+🕒 Mute Time : 2 Hours
+
 ⛔━━━━━━━━━━━━⛔
 """
 
-                bot.send_message(
-                    message.chat.id,
-                    remove_text
-                )
+        bot.send_message(
+            message.chat.id,
+            mute_text
+        )
 
-            except Exception as e:
-                print(e)
+    except Exception as e:
+        print(e)
 
-        return
+    return
 
     # ==========================================
     # SEARCH MOVIES
