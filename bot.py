@@ -296,29 +296,29 @@ def search_movie(message):
         except:
             pass
 
-        # ==========================================
-        # FIRST WARNING
-        # ==========================================
-        if user_id not in warned_users:
+# ==========================================
+# FIRST WARNING
+# ==========================================
+if user_id not in warned_users:
 
-            warned_users[user_id] = 1
+    warned_users[user_id] = 1
 
-            warning_text = f"""
+    warning_text = f"""
 🚫━━━━━━━━━━━━🚫
 
 Red line {name}
 
 ඔයාට මේපාරට විතරක් සමාව දෙනවා 😕
 
-ආයෙ Link දැම්මොත් remove කරනවා 😡
+ආයෙ Link දැම්මොත් mute කරනවා 😡
 
 🚫━━━━━━━━━━━━🚫
 """
 
-            bot.send_message(
-                message.chat.id,
-                warning_text
-            )
+    bot.send_message(
+        message.chat.id,
+        warning_text
+    )
 
 # ==========================================
 # SECOND TIME = 2 HOURS MUTE
@@ -362,7 +362,6 @@ Repeated Link Sharing 🚫
         print(e)
 
     return
-
     # ==========================================
     # SEARCH MOVIES
     # ==========================================
