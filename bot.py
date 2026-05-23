@@ -15,7 +15,6 @@ bot = telebot.TeleBot(BOT_TOKEN)
 # TMDB API
 # ==========================================
 API_KEY = "9749e1cc34cc81122cae6b163608aa03"
-
 API = "https://api.themoviedb.org/3"
 
 # ==========================================
@@ -51,7 +50,6 @@ warned_users = {}
 def check_movie_on_site(title, year):
 
     slug = title.lower().replace(" ", "-")
-
     url = f"{WEBSITE}/{slug}-{year}"
 
     try:
@@ -92,7 +90,7 @@ def get_video_id(message):
 
 
 # ==========================================
-# WELCOME MESSAGE
+# WELCOME NEW USERS
 # ==========================================
 @bot.message_handler(content_types=['new_chat_members'])
 def welcome(message):
@@ -114,7 +112,7 @@ Bot විසින් ඔයාට හොයන Movies/Drama දානවා.
 request එකක් දාන්න අමතක කරන්න එපා.
 
 අපි ඔයාට පැය 24ත් - 48ත් අතර
-Movie/Drama එක site එකට upload කරනවා. 🎬
+Movie/Drama එක site එකට upload කරනවා 🎬
 
 🚫 Group Rules 🚫
 
@@ -127,6 +125,7 @@ Movie/Drama එක site එකට upload කරනවා. 🎬
 
         bot.reply_to(message, text)
 
+        # AUTO FORWARD VIDEO
         try:
 
             bot.forward_message(
@@ -147,6 +146,9 @@ def start(message):
 
     args = message.text.split()
 
+    # ==========================================
+    # OPEN MOVIE
+    # ==========================================
     if len(args) > 1:
 
         data = args[1].split("_")
@@ -250,6 +252,9 @@ Request Button එක click කරන්න 👇
                 reply_markup=markup
             )
 
+    # ==========================================
+    # NORMAL START
+    # ==========================================
     else:
 
         bot.send_message(
@@ -282,14 +287,18 @@ def search_movie(message):
         name = message.from_user.first_name
 
         try:
+
             bot.delete_message(
                 message.chat.id,
                 message.message_id
             )
+
         except:
             pass
 
-        # First Warning
+        # ==========================================
+        # FIRST WARNING
+        # ==========================================
         if user_id not in warned_users:
 
             warned_users[user_id] = 1
@@ -311,7 +320,9 @@ def search_movie(message):
                 warning_text
             )
 
-        # Second Time Ban
+        # ==========================================
+        # SECOND TIME = BAN
+        # ==========================================
         else:
 
             try:
@@ -343,7 +354,7 @@ Repeated Link Sharing 🚫
         return
 
     # ==========================================
-    # SEARCH
+    # SEARCH MOVIES
     # ==========================================
     bot.send_chat_action(message.chat.id, "typing")
 
@@ -362,7 +373,6 @@ Repeated Link Sharing 🚫
 
         bot.send_message(
             message.chat.id,
-
             """
 කනගාටැයි 😔
 
@@ -370,7 +380,6 @@ Repeated Link Sharing 🚫
 
 Correct Name + Year දාලා try කරන්න 😇
 """,
-
             reply_to_message_id=message.message_id
         )
 
@@ -409,9 +418,7 @@ Correct Name + Year දාලා try කරන්න 😇
         )
 
     bot.send_message(
-
         message.chat.id,
-
         f"""
 🔎 Your Search 👉 {query}
 
@@ -419,9 +426,7 @@ Select Movie 👇
 
 -- Powered By MOVIE STREAM --
 """,
-
         reply_markup=markup,
-
         reply_to_message_id=message.message_id
     )
 
@@ -448,15 +453,12 @@ def request_movie(call):
     )
 
     bot.send_message(
-
         call.from_user.id,
-
         """
 🎬 Movie not available on website
 
 Request movie below 👇
 """,
-
         reply_markup=markup
     )
 
@@ -479,28 +481,27 @@ def send_request(call):
 
     now = datetime.datetime.now()
 
-# ==========================================
-# 1 HOUR LIMIT
-# ==========================================
-if user in user_requests:
+    # ==========================================
+    # 1 HOUR LIMIT
+    # ==========================================
+    if user in user_requests:
 
-    last = user_requests[user]
+        last = user_requests[user]
 
-    diff = (now - last).total_seconds()
+        diff = (now - last).total_seconds()
 
-    # 1 hour = 3600 seconds
-    if diff < 3600:
+        if diff < 3600:
 
-        remaining = int((3600 - diff) / 60)
+            remaining = int((3600 - diff) / 60)
 
-        bot.answer_callback_query(
-            call.id,
-            f"❌ Try again after {remaining} minutes"
-        )
+            bot.answer_callback_query(
+                call.id,
+                f"❌ Try again after {remaining} minutes"
+            )
 
-        return
+            return
 
-user_requests[user] = now
+    user_requests[user] = now
 
     # ==========================================
     # USER MESSAGE
@@ -549,7 +550,7 @@ user කෙනෙක් movie / tv series එකක් ඉල්ලනවා �
     )
 
     # ==========================================
-    # ALERT
+    # CALLBACK ALERT
     # ==========================================
     bot.answer_callback_query(
         call.id,
