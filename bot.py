@@ -34,7 +34,7 @@ user_requests = {}
 warned_users = {}
 
 # ==========================================
-# CHECK WEBSITE
+# WEBSITE CHECK
 # ==========================================
 def check_movie_on_site(title, year):
     slug = title.lower().replace(" ", "-")
@@ -61,7 +61,7 @@ def get_video_id(message):
     bot.reply_to(message, f"VIDEO MESSAGE ID:\n{message.message_id}")
 
 # ==========================================
-# WELCOME MESSAGE (UNCHANGED CONTENT)
+# WELCOME MESSAGE (UNCHANGED)
 # ==========================================
 @bot.message_handler(content_types=['new_chat_members'])
 def welcome(message):
@@ -91,7 +91,7 @@ Movie/Drama එක site එකට upload කරනවා 🎬
 ❌ Promotions කරන්න එපා
 ❌ Spam කරන්න එපා
 
-ඔයාගේ යාලුවොත් Group එකට add කරන්න අමතක කරන්න එපා.🫂
+ඔයාගේ යාලුවොත් add කරන්න 🫂
 """
 
         bot.reply_to(message, text)
@@ -147,7 +147,7 @@ def start(message):
         if exists:
 
             text = f"""
-🎬 {title} ({year}) Sinhala Subtitles | English Subtitles
+🎬 {title} ({year}) Sinhala Subtitles
 
 ⭐ IMDB Rating : {rating}
 
@@ -191,7 +191,7 @@ Request Button එක click කරන්න 👇
         bot.send_message(message.chat.id, "Send movie name to search 🔎")
 
 # ==========================================
-# SEARCH MOVIES (FIXED ONLY STRUCTURE)
+# SEARCH FUNCTION
 # ==========================================
 @bot.message_handler(func=lambda m: True)
 def search_movie(message):
@@ -225,7 +225,7 @@ Red line {name}
 
 ඔයාට මේපාරට විතරක් සමාව දෙනවා 😕
 
-ආයෙ Link දැම්මොත් remove කරනවා 😡
+ආයෙ Link දැම්මොත් mute කරනවා 😡
 
 🚫━━━━━━━━━━━━🚫
 """
@@ -278,10 +278,22 @@ Repeated Link Sharing 🚫
 
     results = data.get("results", [])
 
+    # ================= NO RESULTS MESSAGE =================
     if not results:
-        bot.send_message(message.chat.id, "No results found 😔")
+
+        bot.send_message(
+            message.chat.id,
+            """
+කනගාටැයි. 😔
+ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
+හරියට නම (අකුරු නිවැරදිව) සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+Sorry. 😔.
+"""
+        )
+
         return
 
+    # ================= RESULTS =================
     markup = InlineKeyboardMarkup()
 
     for item in results[:10]:
@@ -316,7 +328,7 @@ Repeated Link Sharing 🚫
     )
 
 # ==========================================
-# REQUEST SYSTEM
+# REQUEST SYSTEM (30 MIN LIMIT)
 # ==========================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("request"))
 def request_movie(call):
@@ -356,11 +368,12 @@ def send_request(call):
 
     now = datetime.datetime.now()
 
+    # ================= 30 MIN LIMIT =================
     if user in user_requests:
         diff = (now - user_requests[user]).total_seconds()
 
-        if diff < 3600:
-            remaining = int((3600 - diff) / 60)
+        if diff < 1800:
+            remaining = int((1800 - diff) / 60)
             bot.answer_callback_query(call.id, f"Wait {remaining} min")
             return
 
@@ -368,24 +381,35 @@ def send_request(call):
 
     bot.send_message(
         call.from_user.id,
-        f"Request sent: {title} ({year})"
+        f"""
+🎬 MOVIE REQUEST SENT
+
+👤 User : {name}
+🔗 Username : @{username}
+
+📥 Title : {title}
+📅 Year : {year}
+🆔 TMDB ID : {movie_id}
+"""
     )
 
     bot.send_message(
         REQUEST_GROUP,
         f"""
-New Movie Request 🎬
+Hy prabhash,
 
-User: {name}
-Username: @{username}
+user කෙනෙක් movie / tv series එකක් ඉල්ලනවා 🎬
 
-Movie: {title}
-Year: {year}
-ID: {movie_id}
+👤 User : {name}
+🔗 Username : @{username}
+
+🎥 Movie Name : {title}
+📅 Year : {year}
+🆔 TMDB ID : {movie_id}
 """
     )
 
-    bot.answer_callback_query(call.id, "Sent ✅")
+    bot.answer_callback_query(call.id, "Request Sent ✅")
 
 # ==========================================
 # RUN BOT
