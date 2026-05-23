@@ -19,7 +19,7 @@ API = "https://api.themoviedb.org/3"
 # ==========================================
 # SETTINGS
 # ==========================================
-BOT_USERNAME = "MS_TG_01bot"
+BOT_USERNAME = "@MS_TG_01bot"
 WEBSITE = "https://moviestream.it.com"
 
 SOURCE_CHAT_ID = -1001234567890
