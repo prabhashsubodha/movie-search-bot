@@ -179,12 +179,11 @@ Request Button එක click කරන්න 👇
             # ✅ FIXED DEEP LINK BUTTON
             start_param = f"{media}_{movie_id}"
             markup.add(
-                InlineKeyboardButton(
-                    "REQUEST FILM",
-                    url=f"https://t.me/{BOT_USERNAME}?start={start_param}"
-                )
-            )
-
+    InlineKeyboardButton(
+        "🎬 REQUEST MOVIE",
+        callback_data=f"request|{media}|{movie_id}|{title}|{year}"
+    )
+)
         if poster:
             bot.send_photo(message.chat.id, poster, caption=text, reply_markup=markup)
         else:
@@ -352,14 +351,13 @@ def send_request(call):
 
     bot.send_message(REQUEST_GROUP,
         f"""
-Movie Request 🎬
+Hy prabhash,
 
-User : {name}
-@{username}
+user කෙනෙක් movie / tv serious එකක් ඉල්ලනවා කියලා.
 
-Title : {title}
-Year : {year}
-ID : {movie_id}
+user ; {name} (@{username if username else "No Username"}),
+
+Movie name : < {title} >
 """
     )
 
