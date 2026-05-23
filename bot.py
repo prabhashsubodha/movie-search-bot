@@ -7,7 +7,7 @@ import re
 # ==========================================
 # BOT TOKEN
 # ==========================================
-BOT_TOKEN = "8642899423:AAFJe_5ZxZsawvuPQ7oabcI1XsRuILPW99w"
+BOT_TOKEN = "8642899423:AAGDL5d5vyqDw-cKXjsBxzj85zAPmS9SUiQ"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # ==========================================
@@ -259,8 +259,8 @@ Repeated Link Sharing 🚫
 """
                 )
 
-            except Exception as e:
-                print(e)
+            except:
+                pass
 
         return
 
@@ -278,7 +278,7 @@ Repeated Link Sharing 🚫
 
     results = data.get("results", [])
 
-    # ================= NO RESULTS MESSAGE =================
+    # ================= NO RESULTS =================
     if not results:
 
         bot.send_message(
@@ -328,7 +328,7 @@ Sorry. 😔.
     )
 
 # ==========================================
-# REQUEST SYSTEM (30 MIN LIMIT)
+# REQUEST SYSTEM
 # ==========================================
 @bot.callback_query_handler(func=lambda call: call.data.startswith("request"))
 def request_movie(call):
