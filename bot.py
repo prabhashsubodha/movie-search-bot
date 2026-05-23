@@ -349,9 +349,9 @@ def request_movie(call):
 
     bot.send_message(
         call.from_user.id,
-        "🎬 Movie not available on website
+        f"🎬 Movie not available on website
 
-Request movie below 👇",
+✅ Request Sent: {title} 👇",
         reply_markup=markup
     )
 
