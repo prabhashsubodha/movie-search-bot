@@ -282,7 +282,11 @@ def search_movie(message):
             )
         )
 
-    bot.send_message(message.chat.id, f"Results for: {query}", reply_markup=markup)
+    bot.send_message(message.chat.id, f"🔎 Your Search 👉 {query}
+
+Select Movie 👇
+
+-- Powered By MOVIE STREAM --", reply_markup=markup)
 
 # ==========================================
 # REQUEST SYSTEM (UNCHANGED LOGIC)
