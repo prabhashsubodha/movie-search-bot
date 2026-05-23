@@ -40,7 +40,17 @@ VIDEO_MESSAGE_ID = 992
 # ==========================================
 # USER REQUEST DATABASE
 # ==========================================
-user_requests = {}
+user_requests = {} 
+
+# ==========================================
+# REQUEST GROUP
+# ==========================================
+REQUEST_GROUP = "@moviestreamrequset"
+
+# ==========================================
+# REQUEST SAVE
+# ==========================================
+user_requests = {} 
 
 # ==========================================
 # CHECK WEBSITE
@@ -100,10 +110,20 @@ def welcome(message):
         user_name = member.first_name
 
         text = f"""
-🎬 Welcome to Our MOVIE STREAM Channel! 🍿
 
-Hey there 👋 ({user_name})
-Thanks for joining!
+Hy 😊👋 ({first_name})
+
+🍁 සාදරයෙන් පිලිගන්නවා Movie Stream Searching චැටි සමුහය වෙතට,
+
+ඔබට මෙම Stream එක තුලින් 💯
+ඔයා හොයන movie එකේ නම group එකට දාන්න. Bot විසින් ඔයාට හොයන Movies/Drama දානවා.
+
+ඔයාට ඕන Movie/Drama එක site එකේ නැතිවුනොත් request එකක් දාන්න අමතක කරන්න එපා. අපි ඔයාට පැය 24ත් - 48ත් අතර Movie/Drama එක site එකට upload කරනවා. 🎬
+
+ඔයා මෙම සමුහය තුල වෙළඳ දැන්වීම් සහ ඔයාගේ Channel Promotion කරන්න හැදුවොත් ඔබ නිකන්ම group එකෙන් අයින් වෙයි 😊
+
+අමතක නොකර ඔයාගේ යාලුවෝ අපේ group එකට add කරන්නත් අමතක කරන්න එපා 🫂
+
 """
 
         # welcome message
@@ -426,6 +446,116 @@ def send_request(call):
         "✅ Request Sent"
     )
 
+   # ==========================================
+    # GROUP MESSAGE
+    # ==========================================
+    group_text = f"""
+Hy prabhash,
+
+user කෙනෙක් movie / tv series එකක් ඉල්ලනවා 🎬
+
+👤 User : {name}
+
+🔗 Username : @{username}
+
+🎥 Movie Name : {title}
+
+📅 Year : {year}
+
+🆔 TMDB ID : {movie_id}
+"""
+
+    bot.send_message(
+        REQUEST_GROUP,
+        group_text
+    )
+
+    # ==========================================
+    # CALLBACK ALERT
+    # ==========================================
+    bot.answer_callback_query(
+        call.id,
+        "✅ Request Sent"
+    )
+    
+# =========================
+# LINK FILTER
+# =========================
+async def delete_links(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    if not update.message:
+        return
+
+    text = update.message.text
+
+    if not text:
+        return
+
+    # Detect links
+    link_pattern = r"(https?://\S+|t\.me/\S+|www\.\S+)"
+
+    if re.search(link_pattern, text):
+
+        user = update.effective_user
+        user_id = user.id
+        name = user.first_name
+
+        # Delete message
+        try:
+            await update.message.delete()
+        except:
+            pass
+
+        # First warning
+        if user_id not in warned_users:
+
+            warned_users[user_id] = 1
+
+            warning_text = f"""
+🚫━━━━━━━━━━━━🚫
+
+{name}
+
+ඔයාට මේපාරට විතරක් සාමාව දෙනවා.😕
+
+ආයෙමත් ඔය විදියට Link දැම්මොත්
+ඔයාව අපි Remove කරලා දානවා.😡
+
+🚫━━━━━━━━━━━━🚫
+"""
+
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=warning_text
+            )
+
+        # Second time = ban
+        else:
+
+            try:
+                await context.bot.ban_chat_member(
+                    chat_id=update.effective_chat.id,
+                    user_id=user_id
+                )
+
+                remove_text = f"""
+⛔━━━━━━━━━━━━⛔
+
+{name} Group එකෙන් Remove කරලා දැම්මා 😡
+
+Reason :
+Repeated Link Sharing 🚫
+
+⛔━━━━━━━━━━━━⛔
+"""
+
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=remove_text
+                )
+
+            except Exception as e:
+                print(e)
 
 # ==========================================
 # START BOT
