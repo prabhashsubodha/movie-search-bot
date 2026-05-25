@@ -360,7 +360,11 @@ Hy prabhash,
 
 user කෙනෙක් movie / tv serious එකක් ඉල්ලනවා කියලා.
 
-👤 User : {name} 🔗 Username : @{username} 🎥 Movie Name : {title} 📅 Year : {year} 🆔 TMDB ID : {movie_id}
+👤 User : {name} 
+🔗 Username : @{username} 
+🎥 Movie Name : {title} 
+📅 Year : {year} 
+🆔 TMDB ID : {movie_id}
 """
     )
 
