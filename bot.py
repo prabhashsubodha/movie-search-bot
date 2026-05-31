@@ -249,11 +249,13 @@ def search_movie(message):
 
     if not results:
         bot.send_message(message.chat.id, f"""කනගාටැයි. 😔
-ඔයා හොයන එක මට හොයාගන්න අමාරුයි.
-හරියට නම සහ වර්ෂය ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
+ඔයා ඉල්ලන movie/Tv serious එකේ අකුරු වැරදි.
+එනිසා එක මට හොයාගන්න අමාරුයි.
+හරියට නම (අකුරු) සහ වර්ෂය නිවැරදිව ඇතුලත් කර නැවත උත්සහ කරන්න. 😇
 Sorry. 😔
-I'm having trouble finding what you're looking for.
-Please enter the correct name and year and try again. 😇""")
+The movie/TV series you requested is misspelled.
+I'm having trouble finding it.
+Please enter the correct name (letters) and year and try again. 😇""")
         return
 
     markup = InlineKeyboardMarkup()
