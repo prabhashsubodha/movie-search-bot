@@ -41,12 +41,29 @@ def check_movie_on_site(title, year):
     slug = title.lower().replace(" ", "-")
     url = f"{WEBSITE}/{slug}-{year}"
 
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+
     try:
-        r = requests.get(url, timeout=5)
-        return (r.status_code == 200), url
-    except:
+        r = requests.get(
+            url,
+            headers=headers,
+            timeout=10,
+            allow_redirects=True
+        )
+
+        print(f"URL: {url}")
+        print(f"STATUS: {r.status_code}")
+
+        if r.status_code == 200:
+            return True, url
+
         return False, url
 
+    except Exception as e:
+        print("ERROR:", e)
+        return False, url
 # ==========================================
 # CHAT ID
 # ==========================================
