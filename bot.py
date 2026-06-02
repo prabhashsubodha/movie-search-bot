@@ -7,7 +7,7 @@ import re
 # ==========================================
 # BOT TOKEN
 # ==========================================
-BOT_TOKEN = "8642899423:AAGDL5d5vyqDw-cKXjsBxzj85zAPmS9SUiQ"
+BOT_TOKEN = "8935234234:AAGo_gzKA1HDqH9rFER58mzBef-wKOKntqY"
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # ==========================================
@@ -19,7 +19,7 @@ API = "https://api.themoviedb.org/3"
 # ==========================================
 # SETTINGS
 # ==========================================
-BOT_USERNAME = "MS_TG_01bot"   # ❗ NO @
+BOT_USERNAME = "MS_Assistant_S_bot"   # ❗ NO @
 
 WEBSITE = "https://moviestream.it.com"
 
