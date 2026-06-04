@@ -254,7 +254,16 @@ def search_movie(message):
     bot.send_chat_action(message.chat.id, "typing")
 
     query = message.text
-    url = f"{API}/search/multi?api_key={API_KEY}&query={query}"
+
+# Year remove
+query = re.sub(r"\b(19|20)\d{2}\b", "", query).strip()
+
+url = f"{API}/search/multi?api_key={API_KEY}&query={query}"
+
+data = requests.get(url, timeout=10).json()
+
+print("QUERY =", query)
+print("TMDB =", data)
 
     try:
         data = requests.get(url, timeout=10).json()
